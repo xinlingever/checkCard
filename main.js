@@ -1,7 +1,7 @@
 	// ==UserScript==
 	// @name         扇贝查卡助手
 	// @version     2018.07.26
-	// @description 在扇贝的查卡时，自动生成可用csv文件，方便查看
+	// @description 在扇贝的查卡时，根据事先定义好的列表，自动生成打卡信息，在当前页面的最底部显示
 	// @author       Aaron Liu
 	// @supportURL   https://github.com/xinlingever/checkCard
 	// @license      MIT

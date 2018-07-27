@@ -164,9 +164,11 @@
 					$('.posttitle .userinfo .span3 .user', holder).each((j, d, n) => {
 
 						var card = {};
+						var isNew = true;
 						for (let c = 0; c < cards.length; c++) {
 							if (cards[c].name === d.text) {
 								card = cards[c];
+								isNew = false;
 								console.log('card:' + d.text + ' ' + card);
 							}
 						}
@@ -187,7 +189,7 @@
 						card.team = $('.team .user', d.parentNode.parentNode).text();
 						// console.log(`${card.NO}: ${card.name}, ${card.img}`);
 
-						if (card.img)
+						if (card.img && isNew)
 							cards.push(card);
 					});
 

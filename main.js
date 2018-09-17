@@ -1,12 +1,12 @@
 	// ==UserScript==
 	// @name         扇贝查卡助手
-	// @version     2018.08.03
+	// @version     2018.09.17
 	// @description 在扇贝的查卡时，根据事先定义好的列表，自动生成打卡信息，在当前页面的最底部显示
 	// @author       Aaron Liu
 	// @supportURL   https://github.com/xinlingever/checkCard
 	// @license      MIT
 	// @date         2018-7-26
-	// @modified     2018-08-03
+	// @modified     2018-9-17
 	// @match        *://www.shanbay.com/team/thread/*
 	// @require           https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js
 	// @run-at            document-end
@@ -15,119 +15,6 @@
 	// @grant             GM_xmlhttpRequest
 	// @namespace undefined
 	// ==/UserScript==
-
-	const lanzhi = {
-		key: '兰芷',
-		name: '兰芷馥郁',
-		card: undefined,
-		members: [
-			'兰芷 ﹏阿喀琉斯メ゛',
-			'兰芷 anglems ',
-			'兰芷 安行',
-			'兰芷 白夜行',
-			'兰芷 笔芯',
-			'兰芷 不负时光不负卿',
-			'兰芷 crq',
-			'兰芷 大鸡腿',
-			'兰芷 daoying_',
-			'兰芷 deadline是勇气',
-			'兰芷 怼怼',
-			'兰芷 高尔佳',
-			'兰芷 Gloria',
-			'兰芷 河马叔叔',
-			'兰芷 宏文他爸',
-			'兰芷 hmilylili123',
-			'兰芷 槲栎林',
-			'兰芷 Jaye L',
-			'兰芷 Jonah',
-			'兰芷 蒹葭夭夭',
-			'兰芷 江南可采莲',
-			'兰芷 江小鱼儿',
-			'兰芷 将琴代语',
-			'兰芷 婧子昕',
-			'兰芷 旧皮',
-			'兰芷 洛洛',
-			'兰芷 雒萌',
-			'兰芷 maggie',
-			'兰芷 芒果',
-			'兰芷 melody88611',
-			'兰芷 命运主宰与轮回大帝',
-			'兰芷 茉莉花开',
-			'兰芷 -慕昭',
-			'兰芷 orange peel',
-			'兰芷 浅慕澈天',
-			'兰芷 青春不老，我们不散',
-			'兰芷 RH',
-			'兰芷 sarasd',
-			'兰芷 Silhouette',
-			'兰芷 striving',
-			'兰芷 傻妮儿',
-			'兰芷 十堇',
-			'兰芷 数学不考100不改名',
-			'兰芷 Tyrion',
-			'兰芷 伟大的小埋',
-			'兰芷 无非语言',
-			'兰芷 夏木清川',
-			'兰芷 想要腹肌的熊',
-			'兰芷 小白',
-			'兰芷 小小慧',
-			'兰芷 言危士',
-			'兰芷 杨立柯',
-			'兰芷 叶舞',
-			'兰芷 夜之明晓',
-			'兰芷 ^倚楼听风雨、',
-			'兰芷 柚子_茶',
-			'兰芷 云昶丶',
-			'兰芷 云中雁',
-			'兰芷 周建',
-			'兰芷 子之子',
-			'兰芷 紫电青霜',
-			'兰芷 子羽'
-		]
-	};
-
-	const jianshen = {
-		key: '健身',
-		name: '健身学习两不误',
-		card: undefined,
-		members: [
-			'Addy',
-			'Adela #_< 张万能',
-			'Beagler',
-			'健身 Cinda',
-			'健身 cy28xq82',
-			'健身 D_传承者',
-			'（健身学习两不误小组）爱尔男',
-			'健身 布布',
-			'健身 静月',
-			'健身 救赎从现在开始',
-			'健身 卡卡',
-			'健身 小毛毛佗',
-			'健身 洞烛机微'
-		]
-	};
-
-	const benniao = {
-		key: '笨鸟',
-		name: '笨鸟先飞',
-		card: undefined,
-		members: [
-			'笨鸟 Arya',
-			'笨鸟 Echo',
-			'笨鸟 fat tiger',
-			'笨鸟 爱吃爱睡的小Sa',
-			'笨鸟 呆头',
-			'笨鸟 网瘾少女',
-			'笨鸟 我是很优秀的',
-			'笨鸟 小蜜蜂'
-		]
-	};
-
-	const teams = [
-		lanzhi,
-		jianshen,
-		benniao
-	];
 
 	! function (N, A) {
 		"object" == typeof exports && "object" == typeof module ? module.exports = A() : "function" == typeof define && define.amd ? define([], A) : "object" == typeof exports ? exports.Pinyin = A() : N.Pinyin = A()
@@ -303,9 +190,8 @@
 		'use strict';
 
 		const cards = [];
-		let teamKey = '';
+		let teamKey = '兰芷';
 
-		var curPage = 1;
 		var curLink = window.location.href;
 
 		var $pages = $('.djangoForumPagination');
@@ -333,19 +219,20 @@
 					var holder = document.createElement("div");
 					holder.innerHTML = response.responseText;
 
-					$('.posttitle .userinfo .span3 .user', holder).each((j, d, n) => {
+					$('.posttitle .userinfo .span3 .user', holder).each((j, dom, n) => {
 
+						var $parent = $(dom.parentNode.parentNode.parentNode.parentNode.parentNode);
 						var card = {};
 						var isNew = true;
 						for (let c = 0; c < cards.length; c++) {
-							if (cards[c].name === d.text) {
+							if (cards[c].name === dom.text) {
 								card = cards[c];
 								isNew = false;
-								console.log('card:' + d.text + ' ' + card);
+								console.log('card:' + dom.text + ' ' + card);
 							}
 						}
 
-						var $imgs = $(d.parentNode.parentNode.parentNode.parentNode.parentNode).find('img');
+						var $imgs = $parent.find('img');
 						var srcs = [];
 
 						if ($imgs.length === 1) {
@@ -356,9 +243,7 @@
 							});
 						}
 
-
-						card.NO = cards.length + 1;
-						card.name = d.text;
+						card.name = dom.text;
 
 						if (srcs.length > 0) {
 							if (card.img) {
@@ -366,15 +251,59 @@
 								// 	card.img.push(src);
 								srcs.map(v => card.img.push(v));
 							} else {
+								var timeStr = $parent.find('.postinfo .time').text();
+
+								var y = 0;
+								var M = 0;
+								var d = 0;
+								var h = 0;
+								var m = 0;
+
+								if (/(\d+)\D*年/.test(timeStr)) {
+									y = RegExp.$1;
+								}
+
+								if (/(\d+)\D*月/.test(timeStr)) {
+									M = RegExp.$1;
+								}
+
+								if (/(\d+)\D*日/.test(timeStr)) {
+									d = RegExp.$1;
+								}
+
+								if (/(\d+)\D*小时/.test(timeStr)) {
+									h = RegExp.$1;
+								}
+
+								if (/(\d+)\D*分钟/.test(timeStr)) {
+									m = RegExp.$1;
+								}
+
+								var nowDate = new Date();
+								var ty = nowDate.getFullYear() - y;
+								var tM = nowDate.getMonth() + 1 - M;
+								var td = nowDate.getDate() - d;
+								var th = nowDate.getHours() - h;
+								var tm = nowDate.getMinutes() - m;
+								if (y) {
+									card.time = ty + '年' + tM + '月';
+								} else if (d) {
+									card.time = td + '日' + th + '点';
+								} else {
+									card.time = th + ':' + tm;
+								}
+
 								card.img = srcs;
 							}
 						}
 
-						card.team = $('.team .user', d.parentNode.parentNode).text();
+						card.team = $('.team .user', dom.parentNode.parentNode).text();
 						// console.log(`${card.NO}: ${card.name}, ${card.img}`);
 
-						if (card.img && isNew)
+						if (card.img && isNew) {
+							card.NO = cards.length + 1;
 							cards.push(card);
+						}
 					});
 
 					if (pageIndex < totalPageCnt) {
@@ -399,7 +328,15 @@
 				if (card.img) {
 
 					for (let i = 0; i < card.img.length; i++) {
-						ret += `<img class='single-img' src='${card.img[i]}' />`;
+						ret += `
+						<div style="position: relative">
+							<img class='single-img' src='${card.img[i]}' />
+							<h4 style="position: absolute; bottom: 0;
+								color: white; margin: 4px;
+								background-color: rgba(0,0,0, 0.5);">
+								${card.time} 
+							</h4>
+						</div>`;
 					}
 				}
 
@@ -419,7 +356,17 @@
 			</div>`;
 		};
 
-		var showCard = () => {
+		var createSortDiv = () => {
+			return `<div style="position: fixed; bottom: 40px; right: 40px; background: rgba(0, 0, 0, 0.3); color: white; padding: 10px">
+			<div id="sortAZ"><h4>按字母顺序排列</h4></div>
+			<div id="sortTime"><h4>按回帖顺序排列</h4></div>
+			</div>`;
+		};
+
+		var showCard = (data) => {
+			if ($('.main-result').length > 0)
+				$('.main-result').remove();
+
 			var $div = $(document.createElement('div'));
 
 			$div.css({
@@ -450,15 +397,30 @@
 				}
 
 				.no-check .name {color: red}
+
+				#sortAZ, #sortTime {
+					cursor: pointer;
+				}
 				</style>
 				`);
 
-			for (let i = 0; i < cards.length; i++) {
-				var d = cards[i];
+			for (let i = 0; i < data.length; i++) {
+				var d = data[i];
 				$div.append(createCard(d));
 
 			}
 
+			$div.append(createSortDiv());
+
+			$('#sortAZ', $div).on('click', () => {
+				showCardAZ();
+			});
+
+			$('#sortTime', $div).on('click', () => {
+				showCardTime();
+			});
+
+			$div.addClass('main-result');
 			$('body').append($div)
 
 		}
@@ -488,122 +450,30 @@
 			return name1 === name2;
 		}
 
-		var showList = () => {
-
-			const noCheckList = [];
-			const memList = [];
-			let checkCount = 0;
-
-			if (cards.length > 0) {
-				var teamName = cards[0].team;
-
-				console.log('team:' + teamName);
-
-				for (let i = 0; i < teams.length; i++) {
-					if (teams[i].name === teamName) {
-						console.log('find team');
-						const team = teams[i];
-						teamKey = team.key;
-
-						for (let j = 0; j < team.members.length; j++) {
-							memList.push({
-								id: memList.length + 1,
-								name: team.members[j],
-								card: undefined
-							});
-						}
-
-						break;
-					}
-				}
+		var cardAz = undefined;
+		var showCardAZ = () => {
+			if (!cardAz) {
+				cardAz = JSON.parse(JSON.stringify(cards));
+				cardAz.sort((a, b) => {
+					const ret = a.nameC.localeCompare(b.nameC);
+					return ret;
+				});
 			}
 
-			if (memList.length === 0) return false;
+			showCard(cardAz);
+		};
 
-			for (let i = 0; i < memList.length; i++) {
-				const mem = memList[i];
-
-				for (let j = 0; j < cards.length; j++) {
-					// console.log(mem.name, cards[j].name);
-					if (compareName(mem.name, cards[j].name, teamKey)) {
-						mem.card = cards[j];
-						checkCount++;
-						break;
-					}
-				}
-
-			}
-
-			if (checkCount < cards.length / 2)
-				return false;
-
-			var $div = $(document.createElement('div'));
-
-			$div.css({
-				'display': 'flex',
-				'flex-wrap': 'wrap'
-			});
-
-			$div.append(`
-				<style>
-				.single-img { width: 220px; }
-				.name {text-align: center; font-size: 18px; color: green;}
-				.single { margin: 10px 10px 30px 10px;}
-				.single-no {color: gray; font-size: 12px; margin-right: 12px;}
-				.single-of-team {opacity: 0.3; font-size: 12px;}
-
-				.no-check-info {
-					display: none;
-					width: 220px;
-				}
-
-				.no-check .single-img {
-					display: none;
-				}
-
-				.no-check .no-check-info {
-					display: block;
-				}
-
-				.no-check .name {color: red}
-				</style>
-				`);
-
-			for (let i = 0; i < memList.length; i++) {
-				let d = undefined;
-				if (memList[i].card) {
-					d = JSON.parse(JSON.stringify(memList[i].card));
-					d.NO = i + 1;
-
-					$div.append(createCard(d));
-				} else
-					$div.append(createCard({
-						name: memList[i].name,
-						NO: i + 1,
-						img: undefined
-					}));
-			}
-
-			$('body').append($div);
-
-			return true;
-		}
+		var showCardTime = () => {
+			showCard(cards);
+		};
 
 		getPage(1, () => {
 			cards.map(c => {
 				c.nameC = Pinyin.convertToPinyin(trimName(c.name, teamKey));
 			});
 
-			cards.sort((a, b) => {
-				const ret = a.nameC.localeCompare(b.nameC);
+			showCardTime();
 
-				// console.log(a1, '    ', b1, ' :::: ', ret);
-				return ret;
-			});
-
-			showCard();
-
-			showList();
 		});
 
 

@@ -1,12 +1,12 @@
 	// ==UserScript==
 	// @name         扇贝查卡助手
-	// @version     2018.09.17
+	// @version     2018.09.25
 	// @description 在扇贝的查卡时，根据事先定义好的列表，自动生成打卡信息，在当前页面的最底部显示
 	// @author       Aaron Liu
 	// @supportURL   https://github.com/xinlingever/checkCard
 	// @license      MIT
 	// @date         2018-7-26
-	// @modified     2018-9-17
+	// @modified     2018-9-25
 	// @match        *://www.shanbay.com/team/thread/*
 	// @require           https://cdn.bootcss.com/jquery/1.12.4/jquery.min.js
 	// @run-at            document-end
@@ -280,11 +280,27 @@
 								}
 
 								var nowDate = new Date();
-								var ty = nowDate.getFullYear() - y;
-								var tM = nowDate.getMonth() + 1 - M;
 								var td = nowDate.getDate() - d;
 								var th = nowDate.getHours() - h;
 								var tm = nowDate.getMinutes() - m;
+
+								if (tm < 0) {
+									tm += 60;
+									th -= 1;
+								}
+
+								if (th < 0) {
+									th += 24;
+									td -= 1;
+								}
+
+								if (td < 0) {
+									td = (new Date(nowDate.getTime())).setDate(td).getDate();
+								}
+
+								var ty = nowDate.getFullYear() - y;
+								var tM = nowDate.getMonth() + 1 - M;
+
 								if (y) {
 									card.time = ty + '年' + tM + '月';
 								} else if (d) {
